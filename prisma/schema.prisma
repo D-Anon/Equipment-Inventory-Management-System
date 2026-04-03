@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Office {
+  id            String             @id @default(cuid())
+  name          String             @unique
+  equipment     Equipment[]
+  supplies      Supply[]
+  transactions  Transaction[]
+  supplyTransactions SupplyTransaction[]
+  personnel     Personnel[]
+  createdAt     DateTime           @default(now())
+}
+
+model Department {
+  id            String             @id @default(cuid())
+  name          String             @unique
+  equipment     Equipment[]
+  transactions  Transaction[]
+  personnel     Personnel[]
+}
+
+model Personnel {
+  id            String       @id @default(cuid())
+  employeeCode  String       @unique
+  fullName      String
+  email         String?
+  contactNumber String?
+  position      String?
+  status        String       @default("Active")
+  officeId      String?
+  departmentId  String?
+  office        Office?      @relation(fields: [officeId], references: [id])
+  department    Department?  @relation(fields: [departmentId], references: [id])
+  createdAt     DateTime     @default(now())
+}
+
+model User {
+  id        String    @id @default(cuid())
+  fullName  String
+  email     String    @unique
+  role      String    @default("Admin")
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+}
+
+model Setting {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  value      String
+  updatedAt  DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  entityType  String
+  entityId    String
+  action      String
+  description String?
+  actorName   String?
+  createdAt   DateTime @default(now())
+}
+
+model Equipment {
+  id             String           @id @default(cuid())
+  assetId        String           @unique
+  name           String
+  category       String
+  brand          String?
+  model          String?
+  serialNumber   String?          @unique
+  condition      String           @default("Good")
+  status         String           @default("Available")
+  location       String?
+  assignedTo     String?
+  remarks        String?
+  officeId       String?
+  departmentId   String?
+  office         Office?          @relation(fields: [officeId], references: [id])
+  department     Department?      @relation(fields: [departmentId], references: [id])
+  transactions   Transaction[]
+  maintenance    MaintenanceLog[]
+  disposals      Disposal[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model Transaction {
+  id             String      @id @default(cuid())
+  transactionId  String      @unique
+  type           String
+  borrowerName   String?
+  dueDate        DateTime?
+  returnDate     DateTime?
+  status         String
+  remarks        String?
+  equipmentId    String
+  officeId       String?
+  departmentId   String?
+  equipment      Equipment   @relation(fields: [equipmentId], references: [id])
+  office         Office?     @relation(fields: [officeId], references: [id])
+  department     Department? @relation(fields: [departmentId], references: [id])
+  createdAt      DateTime    @default(now())
+}
+
+model MaintenanceLog {
+  id             String    @id @default(cuid())
+  maintenanceId  String    @unique
+  issue          String
+  technician     String?
+  status         String
+  remarks        String?
+  equipmentId    String
+  equipment      Equipment @relation(fields: [equipmentId], references: [id])
+  createdAt      DateTime  @default(now())
+}
+
+model Disposal {
+  id            String    @id @default(cuid())
+  disposalId    String    @unique
+  reason        String
+  status        String
+  disposedAt    DateTime  @default(now())
+  approvedBy    String?
+  remarks       String?
+  equipmentId   String
+  equipment     Equipment @relation(fields: [equipmentId], references: [id])
+  createdAt     DateTime  @default(now())
+}
+
+model Supply {
+  id            String              @id @default(cuid())
+  supplyId      String              @unique
+  itemName      String
+  category      String
+  unit          String
+  stockOnHand   Int                 @default(0)
+  reorderLevel  Int                 @default(0)
+  remarks       String?
+  officeId      String?
+  office        Office?             @relation(fields: [officeId], references: [id])
+  transactions  SupplyTransaction[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model SupplyTransaction {
+  id             String    @id @default(cuid())
+  transactionId  String    @unique
+  type           String
+  quantity       Int
+  requestedBy    String?
+  remarks        String?
+  supplyIdRef    String
+  officeId       String?
+  supply         Supply    @relation(fields: [supplyIdRef], references: [id])
+  office         Office?   @relation(fields: [officeId], references: [id])
+  createdAt      DateTime  @default(now())
+}
