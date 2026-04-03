@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/shared/app-shell";
-import { prisma } from "@/lib/prisma";
-import { formatDate } from "@/lib/format";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { formatDate } from "@/lib/format";
+import { prisma } from "@/lib/prisma";
 
 export default async function SupplyTransactionsPage() {
   const rows = await prisma.supplyTransaction.findMany({
@@ -32,8 +32,8 @@ export default async function SupplyTransactionsPage() {
                 <td>{row.supply.itemName}</td>
                 <td><StatusBadge value={row.type} /></td>
                 <td>{row.quantity}</td>
-                <td>{row.requestedBy ?? "—"}</td>
-                <td>{row.office?.name ?? "—"}</td>
+                <td>{row.requestedBy ?? "-"}</td>
+                <td>{row.office?.name ?? "-"}</td>
                 <td>{formatDate(row.createdAt)}</td>
               </tr>
             ))}
