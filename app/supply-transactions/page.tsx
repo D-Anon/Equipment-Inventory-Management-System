@@ -30,7 +30,7 @@ export default async function SupplyTransactionsPage() {
               <tr key={row.id}>
                 <td>{row.transactionId}</td>
                 <td>{row.supply.itemName}</td>
-                <td><StatusBadge value={row.type}</StatusBadge></td>
+                <td><StatusBadge value={row.type} /></td>
                 <td>{row.quantity}</td>
                 <td>{row.requestedBy ?? "—"}</td>
                 <td>{row.office?.name ?? "—"}</td>

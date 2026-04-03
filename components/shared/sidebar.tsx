@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -20,7 +21,7 @@ const links = [
   { href: "/users", label: "Users" },
   { href: "/settings", label: "Settings" },
   { href: "/search", label: "Search" }
-];
+] satisfies Array<{ href: Route; label: string }>;
 
 export function Sidebar() {
   const pathname = usePathname();
